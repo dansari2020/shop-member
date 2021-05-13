@@ -7,18 +7,25 @@ module OmniAuth
              site: ENV["DOORKEEPER_APP_URL"],
              authorize_path: "/oauth/authorize"
 
-      uid do
-        raw_info["id"]
-      end
+      option :pkce, true
+
+      uid{ raw_info['id'] }
 
       info do
         {
-          email: raw_info["email"]
+          :name => raw_info['name'],
+          :email => raw_info['email']
+        }
+      end
+
+      extra do
+        {
+          'raw_info' => raw_info
         }
       end
 
       def raw_info
-        @raw_info ||= access_token.get("/api/v1/me.json").parsed
+        @raw_info ||= access_token.get('/me').parsed
       end
     end
   end
