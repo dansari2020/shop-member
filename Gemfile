@@ -10,9 +10,10 @@ gem "rails", "~> 5.2"
 gem "sass-rails", "~> 5.0"
 gem "uglifier", ">= 1.3.0"
 
-gem "devise", "~> 4.6"
-gem "omniauth-oauth2", "~> 1.6"
+gem "devise"
+gem "omniauth-oauth2"
 gem "rollbar"
+gem "omniauth-rails_csrf_protection"
 
 group :development do
   gem "dotenv-rails"
