@@ -260,7 +260,7 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  config.omniauth :doorkeeper,
+  config.omniauth "doorkeeper",
                   ENV['DOORKEEPER_APP_ID'],
                   ENV['DOORKEEPER_APP_SECRET'],
                   scope: 'read',
