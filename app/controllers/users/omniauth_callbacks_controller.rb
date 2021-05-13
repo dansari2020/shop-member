@@ -15,4 +15,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def failure
     redirect_to root_path
   end
+
+  def passthru
+    # raise "Hello!"
+    super
+  end
 end
