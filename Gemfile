@@ -28,3 +28,6 @@ end
 group :production do
   gem "pg", "~> 1.1"
 end
+
+gem "sentry-ruby"
+gem "sentry-rails"
