@@ -1,5 +1,47 @@
-class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+class Users::OmniauthCallbacksController < ApplicationController
+  require 'oauth2'
+  before_action :oauth_client
+  CLIENT_ID = ENV["DOORKEEPER_APP_ID"]
+  CLIENT_SECRET = ENV["DOORKEEPER_APP_SECRET"]
+  APP_URL = ENV["DOORKEEPER_APP_URL"]
+  CALLBACK_URL = ENV["APP_CALLBACK_URL"]
+  def oauth_client
+    @oauth_client ||= OAuth2::Client.new(CLIENT_ID,
+                                       CLIENT_SECRET,
+                                       authorize_url: '/oauth/authorize',
+                                       site: APP_URL,
+                                       token_url: '/oauth/token',
+                                       redirect_uri: CALLBACK_URL)
+  end
+
+  def user_authorize
+    redirect_to oauth_client.auth_code.authorize_url(scope: "read")
+  end
+
+    # The OAuth callback
   def doorkeeper
+    # Make a call to exchange the authorization_code for an access_token
+    response = @oauth_client.auth_code.get_token(params[:code])
+
+    # Extract the access token from the response
+    token = response.to_hash[:access_token]
+
+    # Decode the token
+    begin
+      decoded = TokenDecoder.new(token, @oauth_client.id).decode
+    rescue Exception => error
+      "An unexpected exception occurred: #{error.inspect}"
+      head :forbidden
+      return
+    end
+
+    # Set the token on the user session
+    session[:user_jwt] = {value: decoded, httponly: true}
+
+    redirect_to root_path
+  end
+
+  def doorkeeper2
     @user = User.from_omniauth(request.env["omniauth.auth"])
 
     if @user.persisted?

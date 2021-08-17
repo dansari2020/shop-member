@@ -1,21 +1,27 @@
 <% unless signed_in? %>
-<h2>Sign in first to explore the provider's API</h2>
-
-<p>
-  <%= link_to "Sign in with OAuth 2 provider", user_doorkeeper_omniauth_authorize_path, method: :post, class: "btn btn-primary" %>
-</p>
+<div class="form-signin">
+  <h1 class="h3 mb-3 font-weight-normal">Sign in With</h1>
+  <p>
+    <%= link_to user_authorize_path, method: :post, class: "btn btn-lg btn-light border btn-block" do %>
+      <img src="/logo.png" style="height: 32px; width: 32px;margin-right: 10px" />
+      <span>Sign in with Mycloud</span>
+    <% end %>
+  </p>
+</div>
 <% else %>
 <h2>Explore the api</h2>
 
 <p>
-  <%= link_to "My Credentials", explore_api_path(:me, format: :json), class: "btn btn-primary data-explore" %>
-  <%= link_to "Projects", explore_api_path(:projects, format: :json), class: "btn btn-secondary data-explore" %>
+  <%= link_to "Shop Overview", explore_api_path(:shops, format: :json), class: "btn btn-primary data-explore" %>
+  <%= link_to "Outbound Order List", explore_api_path("shops/outbound_orders", format: :json), class: "btn btn-secondary data-explore" %>
   <%= link_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-primary" %>
 </p>
 
-<p>You are logged in as <%= current_user.email %></p>
+<p>You are logged in as
+  <%= current_user.email %>
+</p>
 
 <p>
-<pre id="display-json">Select one of the api methods above</pre>
+  <pre id="display-json">Select one of the api methods above</pre>
 </p>
 <% end %>
