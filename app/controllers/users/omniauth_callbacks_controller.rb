@@ -25,20 +25,12 @@ class Users::OmniauthCallbacksController < ApplicationController
 
     # Extract the access token from the response
     token = response.to_hash[:access_token]
-
-    # Decode the token
-    begin
-      decoded = TokenDecoder.new(token, @oauth_client.id).decode
-    rescue Exception => error
-      "An unexpected exception occurred: #{error.inspect}"
-      head :forbidden
-      return
-    end
-
     # Set the token on the user session
-    session[:user_jwt] = {value: decoded, httponly: true}
+    session[:user_jwt] = {value: token, httponly: true}
 
-    redirect_to root_path
+    @json = doorkeeper_access_token.get("api/v1/members/profile", headers: {'Authorization' => token }).parsed
+
+    render json: @json
   end
 
   def doorkeeper2
