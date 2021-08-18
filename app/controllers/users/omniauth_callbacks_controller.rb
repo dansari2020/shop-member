@@ -3,7 +3,7 @@ class Users::OmniauthCallbacksController < ApplicationController
   before_action :oauth_client
   CLIENT_ID = ENV["DOORKEEPER_APP_ID"]
   CLIENT_SECRET = ENV["DOORKEEPER_APP_SECRET"]
-  APP_URL = ENV["DOORKEEPER_APP_URL"]
+  APP_URL = ENV["DOORKEEPER_FRONTEND_APP_URL"] || ENV["DOORKEEPER_APP_URL"]
   CALLBACK_URL = ENV["APP_CALLBACK_URL"]
   def oauth_client
     @oauth_client ||= OAuth2::Client.new(CLIENT_ID,
