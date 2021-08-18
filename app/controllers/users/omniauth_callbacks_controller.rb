@@ -5,13 +5,13 @@ class Users::OmniauthCallbacksController < ApplicationController
   CLIENT_SECRET = ENV["DOORKEEPER_APP_SECRET"]
   APP_URL = ENV["DOORKEEPER_FRONTEND_APP_URL"] || ENV["DOORKEEPER_APP_URL"]
   CALLBACK_URL = ENV["APP_CALLBACK_URL"]
-  def oauth_client
-    @oauth_client ||= OAuth2::Client.new(CLIENT_ID,
-                                       CLIENT_SECRET,
-                                       authorize_url: '/oauth/authorize',
-                                       site: APP_URL,
-                                       token_url: '/oauth/token',
-                                       redirect_uri: CALLBACK_URL)
+  def oauth_client(site = APP_URL)
+    OAuth2::Client.new(CLIENT_ID,
+      CLIENT_SECRET,
+      authorize_url: '/oauth/authorize',
+      site: site,
+      token_url: '/oauth/token',
+      redirect_uri: CALLBACK_URL)
   end
 
   def user_authorize
@@ -21,7 +21,7 @@ class Users::OmniauthCallbacksController < ApplicationController
     # The OAuth callback
   def doorkeeper
     # Make a call to exchange the authorization_code for an access_token
-    response = @oauth_client.auth_code.get_token(params[:code])
+    response = @oauth_client(ENV["DOORKEEPER_APP_URL"]).auth_code.get_token(params[:code])
 
     # Extract the access token from the response
     token = response.to_hash[:access_token]
