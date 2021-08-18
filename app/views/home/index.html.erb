@@ -1,3 +1,25 @@
+<% content_for :stylesheet do %>
+<style>
+  body {
+    display: -webkit-box;
+    display: flex;
+    -ms-flex-align: center;
+    -ms-flex-pack: center;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+  .form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+  }
+</style>
+<% end %>
 <% unless signed_in? %>
 <div class="form-signin">
   <h1 class="h3 mb-3 font-weight-normal">Sign in With</h1>
@@ -12,8 +34,8 @@
 <h2>Explore the api</h2>
 
 <p>
-  <%= link_to "Shop Overview", explore_api_path(:shops, format: :json), class: "btn btn-primary data-explore" %>
-  <%= link_to "Outbound Order List", explore_api_path("shops/outbound_orders", format: :json), class: "btn btn-secondary data-explore" %>
+  <%#= link_to "Shop Overview", explore_api_path(:shops, format: :json), class: "btn btn-primary data-explore" %>
+  <%#= link_to "Outbound Order List", explore_api_path("shops/outbound_orders", format: :json), class: "btn btn-secondary data-explore" %>
   <%= link_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-primary" %>
 </p>
 
@@ -21,7 +43,14 @@
   <%= current_user.email %>
 </p>
 
-<p>
+<div class="d-flex">
+  <label class="form-control" style="width: 70px">/api/v1/</label>
+  <input type="search" class="form-control rounded" placeholder="shops" aria-label="Search" name="api" id="api"
+    aria-describedby="search-addon" />
+  <button type="button" class="btn btn-primary px-3 btn-sm mb-2 data-explore">Call</button>
+</div>
+
+<p class="gray px-3 py-3">
   <pre id="display-json">Select one of the api methods above</pre>
 </p>
 <% end %>

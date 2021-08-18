@@ -1,36 +1,31 @@
 class Users::OmniauthCallbacksController < ApplicationController
   require 'oauth2'
-  before_action :oauth_client
-  CLIENT_ID = ENV["DOORKEEPER_APP_ID"]
-  CLIENT_SECRET = ENV["DOORKEEPER_APP_SECRET"]
-  APP_URL = ENV["DOORKEEPER_FRONTEND_APP_URL"] || ENV["DOORKEEPER_APP_URL"]
-  CALLBACK_URL = ENV["APP_CALLBACK_URL"]
-  def oauth_client(site = APP_URL)
-    OAuth2::Client.new(CLIENT_ID,
-      CLIENT_SECRET,
-      authorize_url: '/oauth/authorize',
-      site: site,
-      token_url: '/oauth/token',
-      redirect_uri: CALLBACK_URL)
-  end
 
   def user_authorize
-    redirect_to oauth_client.auth_code.authorize_url(scope: "read")
+    redirect_to doorkeeper_oauth_client(ENV["DOORKEEPER_FRONTEND_APP_URL"]).auth_code.authorize_url(scope: "read")
   end
 
     # The OAuth callback
   def doorkeeper
     # Make a call to exchange the authorization_code for an access_token
-    response = @oauth_client(ENV["DOORKEEPER_APP_URL"]).auth_code.get_token(params[:code])
+    begin
+      response = doorkeeper_oauth_client.auth_code.get_token(params[:code])
+    
+      # Extract the access token from the response
+      token = response.to_hash[:access_token]
+      # Set the token on the user session
+      session[:user_jwt] = {value: token, httponly: true}
 
-    # Extract the access token from the response
-    token = response.to_hash[:access_token]
-    # Set the token on the user session
-    session[:user_jwt] = {value: token, httponly: true}
+      @json = doorkeeper_access_token(token).get("api/v1/members/profile").parsed
+      
+      @user = User.from_oauth(@json.dig("data", "attributes"))
+      @user.update_credentials(token)
 
-    @json = doorkeeper_access_token.get("api/v1/members/profile", headers: {'Authorization' => token }).parsed
-
-    render json: @json
+      sign_in_and_redirect @user, event: :authentication
+    rescue StandardError => e
+      flash[:alert] = e.message
+      failure
+    end
   end
 
   def doorkeeper2
