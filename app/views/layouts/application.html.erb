@@ -35,13 +35,17 @@
     <script>
     $(function () {
       $(".data-explore").click(function () {
-        var link = "/explore/" + $("#api").val();
+        var link = "/explore?api=" + $("#api").val();
         $("#display-json").text(
           "Please Wait - Fetching the /api/v1/" + $("#api").val() + " API ..."
         );
         $("#display-json").load(link, function (text, textStatus, req) {
           if (textStatus === "error") {
-            $(this).text("Error: Please enter a valid API address");
+            if (req.status == 401) {
+              location.reload();
+            } else {
+              $(this).text("Error: Please enter a valid API address");
+            }
           } else {
             $(this).text(JSON.stringify(JSON.parse(text), null, 2));
           }

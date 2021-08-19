@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get 'explore/:api' => 'api#explore', :as => :explore_api
+  get 'explore' => 'api#explore', :as => :explore_api
 
   devise_for :users, controllers: {
     sessions: 'users/sessions',
